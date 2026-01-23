@@ -10,6 +10,7 @@
     --text: #e5e7eb;
     --muted: rgba(229, 231, 235, 0.75);
     --accent: #93c5fd;
+    --glow: #1f2937;
 }
 
 :root[data-theme="light"] {
@@ -20,6 +21,7 @@
     --text: #111827;
     --muted: rgba(17, 24, 39, 0.70);
     --accent: #2563eb;
+    --glow: #dbeafe;
 }
 
 body {
@@ -30,9 +32,9 @@ body {
     color: var(--text);
 
     /* Background */
-    background: radial-gradient(1200px 700px at 20% 10%, #1f2937 0%, var(--bg1) 45%, var(--bg2) 100%);
-    min-height: 100vh;
 
+    min-height: 100vh;
+    background: radial-gradient(1200px 700px at 20% 10%, var(--glow) 0%, var(--bg1) 45%, var(--bg2) 100%);
     /* FLEXBOX: pusatkan konten */
     display: flex;
     flex-direction: column;
@@ -42,6 +44,8 @@ body {
     align-items: center;
 
     padding: 28px;
+
+    transition: background 250ms ease, color 250ms ease;
 }
 
 /* Pembungkus utama */
