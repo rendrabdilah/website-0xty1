@@ -1,39 +1,107 @@
 <!DOCTYPE html>
-<html>
-
+<html lang="en">
 <head>
   <meta charset="utf-8" />
-  <title>Website 0xty1</title>
-  <link rel="stylesheet" href="style.css" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>0xTyrs // system console</title>
+  <meta name="description" content="0xTyrs system console: ports, state traces, artifact cache." />
+  <link rel="stylesheet" href="./style.css" />
 </head>
-
 <body>
-  <header class="nav">
-    <div class="nav-left">flaxbox</div>
-    <nav class="nav-right">
-      <a href="https://rendrabdilah.github.io/website-0xty1/">Home</a>
-      <a href="#info">About</a>
-      <a href="https://github.com/rendrabdilah/website-0xty1" target="_blank" rel="noreferrer">GitHub</a>
-      <button class="btn ghost" id="themeBtn" type="button">Theme</button>
-    </nav>
-  </header>
+  <div class="noise" aria-hidden="true"></div>
+  <div class="scanlines" aria-hidden="true"></div>
 
-  <main class="container">
-    <section class="left">
-      <h1>Hello</h1>
-      <p>Ini website pertamaku.</p>
+  <main class="hub">
+    <header class="console-bar">
+      <div class="console-title">
+        <span class="sig">0xTyrs</span>
+        <span class="mono">system console</span>
+      </div>
+      <nav class="console-links" aria-label="Portal links">
+        <a class="console-link" href="./latent.core/index.html">LATENT.CORE</a>
+        <a class="console-link" href="./latent.core/archive.html">ARCHIVE</a>
+        <a class="console-link" href="./latent.core/backrooms.html">BACKROOMS</a>
+      </nav>
+      <div class="console-right">
+        <div class="console-tabs" role="tablist" aria-label="system tabs">
+          <span class="tab active" role="tab" aria-selected="true" data-tab="hub">hub</span>
+          <span class="tab" role="tab" aria-selected="false" data-tab="ports">ports</span>
+          <span class="tab" role="tab" aria-selected="false" data-tab="state">state</span>
+        </div>
+        <div class="mode-indicator mono" id="modeIndicator">mode: hub</div>
+      </div>
+    </header>
+
+    <section class="hero">
+      <div class="hero-left">
+        <h1>0xTyrs</h1>
+        <p class="manifesto">
+          operator node :: route signals / retain traces
+        </p>
+      </div>
+      <div class="hero-right mono">
+        <div class="status-chip">signal: steady</div>
+        <div class="status-chip">input: gated</div>
+        <div class="status-chip">observer: present</div>
+      </div>
     </section>
 
-    <section class="right" id="info">
-      <h2>Info</h2>
-      <ul class="list">
-        <li><b>OS:</b> Fedora GNOME</li>
-        <li><b>Deploy:</b> GitHub Pages</li>
-        <li><b>Next:</b> CSS Responsive</li>
-      </ul>
+    <section class="grid">
+      <article class="panel modules" id="portsPanel">
+        <div class="panel-head">
+          <h2 id="leftTitle">modules / ports</h2>
+          <span class="mono faint" id="leftMeta">links: local</span>
+        </div>
+        <div class="port-grid" id="portsList" aria-live="polite"></div>
+      </article>
+
+      <article class="panel state" id="statePanel">
+        <div class="panel-head">
+          <h2 id="centerTitle">system state</h2>
+          <span class="mono faint" id="centerMeta">stream: live</span>
+        </div>
+        <div class="panel-body hub-summary" id="hubSummary" aria-live="polite"></div>
+        <div class="panel-body routing-table" id="routingTable" aria-live="polite"></div>
+        <div class="log" id="systemLog" aria-live="polite"></div>
+        <div class="log-cursor mono" id="stateCursor" aria-hidden="true">_</div>
+      </article>
+
+      <article class="panel artifacts" id="rightPanel">
+        <div class="panel-head">
+          <h2 id="rightTitle">artifact cache / recent traces</h2>
+          <span class="mono faint" id="rightMeta">render: sparse</span>
+        </div>
+        <div class="artifact-list" id="artifactList">
+          <div class="artifact">
+            <div class="artifact-title mono">trace-7f</div>
+            <pre class="artifact-ascii">..::..::..::
+::--==--==--
+..::..::..::</pre>
+          </div>
+          <div class="artifact">
+            <div class="artifact-title mono">drift-0c</div>
+            <pre class="artifact-ascii">////\\\\
+\\\\////
+////\\\\</pre>
+          </div>
+          <div class="artifact">
+            <div class="artifact-title mono">echo-91</div>
+            <pre class="artifact-ascii">..  ..  ..
+  ::  ::
+..  ..  ..</pre>
+          </div>
+        </div>
+        <div class="handshake-list" id="handshakeList" aria-live="polite"></div>
+      </article>
     </section>
+
+    <footer class="footer mono">
+      <span>hub: local-only</span>
+      <span>routing: local surface</span>
+    </footer>
   </main>
-  <script src="app.js"></script>
-</body>
 
+  <script src="./app.js" defer></script>
+
+</body>
 </html>

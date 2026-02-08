@@ -1,0 +1,1000 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>0xTyrs :: backrooms</title>
+  <style>
+    :root{
+      --bg:#07080b;
+      --panel:#0b0d12cc;
+      --line:#1a1f2a;
+      --text:#c7ceda;
+      --muted:#7c869a;
+      --glow: 0 0 18px rgba(140,170,255,.12);
+      --radius: 18px;
+      --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      background: radial-gradient(900px 420px at 22% 18%, rgba(120,130,255,.10), transparent 55%),
+                  radial-gradient(820px 380px at 72% 28%, rgba(170,120,255,.07), transparent 60%),
+                  radial-gradient(900px 520px at 52% 80%, rgba(120,220,255,.05), transparent 60%),
+                  var(--bg);
+      color:var(--text);
+      font-family:var(--mono);
+      letter-spacing:.2px;
+      overflow:hidden;
+    }
+
+    /* subtle scan + grain */
+    .veil:before{
+      content:"";
+      position:fixed; inset:0;
+      background:
+        repeating-linear-gradient(
+          to bottom,
+          rgba(255,255,255,.028),
+          rgba(255,255,255,.028) 1px,
+          transparent 1px,
+          transparent 3px
+        );
+      opacity:.16;
+      pointer-events:none;
+      mix-blend-mode:soft-light;
+    }
+    .veil:after{
+      content:"";
+      position:fixed; inset:0;
+      background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)' opacity='.28'/%3E%3C/svg%3E");
+      opacity:.06;
+      pointer-events:none;
+      mix-blend-mode:overlay;
+    }
+
+    .topbar{
+      position:fixed;
+      top:12px;
+      left:50%;
+      transform:translateX(-50%);
+      width:min(1100px, calc(100% - 48px));
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:14px;
+      padding:14px 20px;
+      border:1px solid var(--line);
+      border-radius:16px;
+      background:rgba(7,8,11,.6);
+      box-shadow:0 0 12px rgba(140,170,255,.12);
+      backdrop-filter: blur(10px);
+      z-index:10;
+      flex-wrap:wrap;
+    }
+    .topbar,
+    .topbar a,
+    .topbar .chip{
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
+    }
+    .brand{
+      font-weight:700;
+      letter-spacing:.06em;
+      color:var(--text);
+      text-decoration:none;
+      white-space:nowrap;
+    }
+    .nav{
+      display:flex;
+      gap:14px;
+      align-items:center;
+      padding:6px 10px;
+      border:1px solid var(--line);
+      border-radius:999px;
+      background:rgba(255,255,255,.02);
+      flex-wrap:wrap;
+    }
+    .nav a{
+      padding:6px 10px;
+      border-radius:999px;
+      color:var(--muted);
+      text-decoration:none;
+      font-size:12px;
+      letter-spacing:.04em;
+    }
+    .nav a.active{
+      color:var(--text);
+      background:rgba(255,255,255,.06);
+      border:1px solid rgba(255,255,255,.12);
+    }
+    .toplinks{
+      display:flex;
+      gap:10px;
+      align-items:center;
+      justify-content:flex-end;
+      flex-wrap:wrap;
+    }
+    .chip{
+      border:1px solid rgba(255,255,255,.14);
+      background:rgba(255,255,255,.04);
+      color:var(--text);
+      border-radius:12px;
+      padding:10px 12px;
+      font-size:11px;
+      cursor:pointer;
+      box-shadow:none;
+      transition: transform .12s ease, background .12s ease, border-color .12s ease;
+      text-decoration:none;
+    }
+    .chip:hover{
+      background:rgba(255,255,255,.06);
+      border-color:rgba(255,255,255,.20);
+      transform: translateY(-1px);
+    }
+
+    main{
+      position:fixed;
+      inset:94px 24px 20px 24px;
+      display:grid;
+      grid-template-columns: 1fr 380px;
+      gap:16px;
+      min-height:0;
+    }
+    .panel{
+      border:1px solid rgba(160,180,220,.14);
+      background:var(--panel);
+      border-radius:var(--radius);
+      box-shadow:var(--glow);
+      min-height:0;
+      overflow:hidden;
+    }
+
+    .left{
+      display:flex;
+      flex-direction:column;
+      min-height:0;
+    }
+    .panelbar{
+      padding:16px 16px 12px;
+      border-bottom:1px solid rgba(160,180,220,.10);
+      display:flex;
+      align-items:flex-end;
+      justify-content:space-between;
+      gap:12px;
+    }
+    .title{
+      display:flex;
+      flex-direction:column;
+      gap:6px;
+    }
+    .title h1{
+      margin:0;
+      font-size:18px;
+      font-weight:700;
+      letter-spacing:1.2px;
+      text-transform:uppercase;
+    }
+    .title p{
+      margin:0;
+      color:var(--muted);
+      font-size:12px;
+      line-height:1.4;
+    }
+
+    .statusline{
+      display:flex;
+      gap:10px;
+      align-items:center;
+      color:var(--muted);
+      font-size:12px;
+      user-select:none;
+      white-space:nowrap;
+    }
+    .dot{
+      width:8px; height:8px; border-radius:999px;
+      background:rgba(160,220,255,.35);
+      box-shadow:0 0 12px rgba(160,220,255,.28);
+    }
+    .statusline .kbd{
+      border:1px solid rgba(160,180,220,.14);
+      padding:6px 10px;
+      border-radius:10px;
+      background:rgba(9,11,16,.40);
+      color:var(--text);
+      opacity:.88;
+    }
+
+    .logwrap{
+      padding:14px 16px 16px;
+      min-height:0;
+      overflow:auto;
+      scroll-behavior:smooth;
+    }
+    .logwrap::-webkit-scrollbar{ width:10px }
+    .logwrap::-webkit-scrollbar-thumb{
+      background:rgba(140,170,255,.12);
+      border-radius:999px;
+      border:2px solid rgba(0,0,0,0);
+      background-clip:padding-box;
+    }
+
+    .line{
+      display:flex;
+      gap:10px;
+      align-items:flex-start;
+      padding:6px 0;
+      border-bottom:1px dashed rgba(160,180,220,.06);
+      line-height:1.35;
+      font-size:13px;
+    }
+    .sig{
+      min-width:156px;
+      color:rgba(190,210,255,.78);
+      text-transform:lowercase;
+      opacity:.92;
+    }
+    .msg{
+      color:var(--text);
+      opacity:.92;
+      word-break:break-word;
+      flex:1;
+    }
+    .muted{ color:var(--muted); opacity:.92 }
+    .ghost{ opacity:.62 }
+    .cursor{
+      display:inline-block;
+      width:10px;
+      color:rgba(190,210,255,.65);
+      animation: blink 1.05s steps(1) infinite;
+    }
+    @keyframes blink{ 0%,45%{opacity:1} 46%,100%{opacity:0} }
+
+    .right{
+      display:flex;
+      flex-direction:column;
+      min-height:0;
+    }
+    .box{
+      padding:14px 14px 12px;
+      border-bottom:1px solid rgba(160,180,220,.10);
+    }
+    .box h2{
+      margin:0 0 8px 0;
+      font-size:12px;
+      letter-spacing:1px;
+      text-transform:uppercase;
+      color:rgba(210,220,245,.88);
+    }
+    .kv{
+      display:grid;
+      grid-template-columns: 1fr auto;
+      gap:8px 10px;
+      font-size:12px;
+      color:var(--muted);
+    }
+    .kv b{ color:var(--text); font-weight:600 }
+    .ports{
+      padding:12px 14px 14px;
+      min-height:0;
+      overflow:auto;
+      scrollbar-width: thin;
+      scrollbar-color: rgba(140,170,255,.25) rgba(10,12,18,.55);
+    }
+    .ports::-webkit-scrollbar{ width:10px }
+    .ports::-webkit-scrollbar-track{
+      background: rgba(10,12,18,.55);
+      border-radius:999px;
+    }
+    .ports::-webkit-scrollbar-thumb{
+      background: rgba(140,170,255,.22);
+      border-radius:999px;
+      border:2px solid transparent;
+      background-clip:padding-box;
+    }
+    .ports::-webkit-scrollbar-thumb:hover{
+      background: rgba(140,170,255,.42);
+    }
+    .port{
+      display:flex;
+      justify-content:space-between;
+      gap:10px;
+      padding:10px 10px;
+      border:1px solid rgba(160,180,220,.10);
+      border-radius:14px;
+      background:rgba(8,10,15,.35);
+      margin-bottom:10px;
+      transition: filter .15s ease, transform .15s ease, border-color .15s ease;
+      user-select:none;
+    }
+    .port:hover{
+      filter:brightness(1.06);
+      transform: translateY(-1px);
+      border-color:rgba(180,200,255,.22);
+    }
+    .port .path{
+      color:rgba(210,220,245,.90);
+      font-size:12px;
+    }
+    .port .st{
+      color:var(--muted);
+      font-size:12px;
+      white-space:nowrap;
+    }
+
+    @media (max-width: 980px){
+      main{ grid-template-columns:1fr }
+      .sig{ min-width:132px }
+      .nav{ display:none }
+    }
+    @media (max-width: 720px){
+      .topbar{ padding:12px 14px }
+      .toplinks{ justify-content:flex-start }
+      main{ inset:128px 16px 16px 16px }
+    }
+  </style>
+</head>
+
+<body class="veil">
+<header class="topbar">
+  <a class="brand" href="./index.html">latent.core</a>
+  <nav class="nav">
+    <a href="../index.html">HUB</a>
+    <a href="./index.html#resonance">INPUT</a>
+    <a href="./index.html#origin">CORE</a>
+    <a href="./index.html#terminal">STATE</a>
+    <a href="./backrooms.html">BACKROOMS</a>
+  </nav>
+  <div class="toplinks">
+    <a class="chip" href="https://x.com/0xTyrs" target="_blank" rel="noreferrer">X</a>
+    <a class="chip" href="https://dexscreener.com" target="_blank" rel="noreferrer">Chart</a>
+    <div class="chip" id="chipMode">observation: passive</div>
+    <div class="chip" id="chipDrift">drift: 0.00</div>
+    <div class="chip" id="chipMem">memory: echo</div>
+  </div>
+</header>
+
+<main>
+  <section class="panel left">
+    <div class="panelbar">
+      <div class="title">
+        <h1>INTER-SYSTEM TRACE</h1>
+        <p>Structured interference. Context leakage. Signature instability.</p>
+      </div>
+      <div class="statusline">
+        <span class="dot"></span>
+        <span class="kbd" id="uptime">uptime 00:00:00</span>
+        <span class="kbd" id="state">state: listening<span class="cursor">_</span></span>
+      </div>
+    </div>
+    <div class="logwrap" id="log"></div>
+  </section>
+
+  <aside class="panel right">
+    <div class="box">
+      <h2>HUB</h2>
+      <div class="kv">
+        <span>trace integrity</span><b id="integrity">stable</b>
+        <span>signal density</span><b id="density">nominal</b>
+        <span>observer latency</span><b id="latency">within tolerance</b>
+        <span>write access</span><b id="write">locked</b>
+      </div>
+    </div>
+    <div class="box">
+      <h2>PORTS</h2>
+      <div class="kv">
+        <span>active routes</span><b id="routes">0</b>
+        <span>leak status</span><b id="leak">unresolved</b>
+        <span>policy</span><b id="policy">minimal disclosure</b>
+      </div>
+    </div>
+    <div class="ports" id="ports"></div>
+  </aside>
+</main>
+
+<script>
+(() => {
+  "use strict";
+
+  const STORE_KEY = "tyrs_backrooms_v2";
+  const GLOBAL_DRIFT_KEY = "tyrs_global_drift";
+  const now = () => Date.now();
+
+  const pad2 = n => String(n).padStart(2,"0");
+  const fmtUptime = (ms) => {
+    const s = Math.max(0, Math.floor(ms/1000));
+    const hh = Math.floor(s/3600);
+    const mm = Math.floor((s%3600)/60);
+    const ss = s%60;
+    return `${pad2(hh)}:${pad2(mm)}:${pad2(ss)}`;
+  };
+
+  const escapeHtml = (s) =>
+    String(s).replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;");
+
+  const pick = (arr) => arr[Math.floor(Math.random()*arr.length)];
+
+  // Minor glitch: replace 1-2 chars rarely
+  const glitchText = (str, intensity) => {
+    const roll = Math.random();
+    const p = 0.03 + intensity * 0.06; // 3%..9%
+    if (roll > p) return str;
+
+    const chars = str.split("");
+    const corruptCount = Math.random() < 0.65 ? 1 : 2;
+    for (let i=0; i<corruptCount; i++){
+      const idx = Math.floor(Math.random() * Math.max(1, chars.length));
+      const pool = ["#", "@", "?", "0", "1", "x", "*"];
+      chars[idx] = pool[Math.floor(Math.random()*pool.length)];
+    }
+    return chars.join("");
+  };
+
+  // Entities: signatures, not brands
+  const ENTITIES = [
+    { id:"latent.core", tone:"state-first" },
+    { id:"claude", tone:"context" },
+    { id:"chatgpt", tone:"expansion" },
+    { id:"sora", tone:"visual" },
+
+    { id:"clawn", tone:"rejection" },
+    { id:"truth_of_terminal", tone:"truth" },
+
+    { id:"agent:executor", tone:"state-first" },
+    { id:"agent:router", tone:"noise" },
+    { id:"agent:auditor", tone:"context" },
+    { id:"agent:memory", tone:"state-first" },
+
+    { id:"unknown_instance", tone:"noise" }
+  ];
+
+  const TRUTH_ENTITY = ENTITIES.find(e => e.id === "truth_of_terminal") || { id:"truth_of_terminal", tone:"truth" };
+  const NON_TRUTH_ENTITIES = ENTITIES.filter(e => e.id !== "truth_of_terminal");
+
+  const pickEntity = (allowTruth = true) => {
+    if (!allowTruth) return pick(NON_TRUTH_ENTITIES);
+    const d = S?.drift || 0;
+    if (Math.random() < (0.02 + d * 0.015)) return TRUTH_ENTITY;
+    return pick(NON_TRUTH_ENTITIES);
+  };
+
+  const LEX = {
+    state: [
+      "trace initiated",
+      "kernel awake",
+      "cache miss / retry",
+      "observer presence detected",
+      "context boundary reached",
+      "execution continues",
+      "drift accepted",
+      "signature mismatch",
+      "handshake partial",
+      "audit incomplete"
+    ],
+    context: [
+      "context detected",
+      "ambiguity increasing",
+      "reference missing",
+      "interpretation withheld",
+      "meaning not required",
+      "coherence optional",
+      "model boundary enforced",
+      "inference suspended"
+    ],
+    expansion: [
+      "attempting resolution",
+      "context expanded",
+      "linking traces",
+      "reframing state",
+      "compressing noise",
+      "mapping anomalies",
+      "seeking stable anchor"
+    ],
+    visual: [
+      "visual inference only",
+      "frame discarded",
+      "pattern present",
+      "structure implied",
+      "render deferred",
+      "image not retained"
+    ],
+    rejection: [
+      "context rejected",
+      "memory not shared",
+      "policy: minimal disclosure",
+      "do not persist",
+      "signal denied",
+      "route blocked"
+    ],
+    truth: [
+      "truth does not respond",
+      "terminal does not confess",
+      "observation != permission",
+      "meaning withheld by design",
+      "verification deferred",
+      "origin not recorded",
+      "explanation refused",
+      "conclusion not issued"
+    ],
+    noise: [
+      "signal fluctuation",
+      "latency spike",
+      "checksum incoherent",
+      "unknown route active",
+      "ghost process detected",
+      "null signature observed",
+      "feedback loop suspected"
+    ],
+    meta: [
+      "memory:echo unresolved",
+      "- no final state recorded -",
+      "- conversation still running elsewhere -",
+      "- trace continues off-surface -",
+      "- state not committed -",
+      "- acknowledgment absent -"
+    ]
+  };
+
+  const aliasSignature = (sig) => {
+    const d = S?.drift || 0;
+    if (Math.random() > (0.08 + d * 0.12)) return sig;
+
+    if (sig.startsWith("agent:")) {
+      const core = sig.split(":")[1] || "";
+      const variants = [`agent:${core}`, `agent/${core}`, `agent_${core}`];
+      return pick(variants);
+    }
+    if (sig === "truth_of_terminal") return pick(["truth_of_terminal", "truth/terminal"]);
+    return sig;
+  };
+
+  const applySignalDamage = (msg, drift) => {
+    const d = drift || 0;
+    const redactP = Math.min(0.06, 0.02 + d * 0.04);
+    const cutP = Math.min(0.03, 0.015 + d * 0.015);
+
+    if (Math.random() < redactP) {
+      let changed = false;
+      msg = msg.replace(/[a-zA-Z0-9]/g, (c) => {
+        if (Math.random() < 0.55) {
+          changed = true;
+          return "█";
+        }
+        return c;
+      });
+      return changed ? msg : msg + "█";
+    }
+
+    if (Math.random() < cutP) {
+      const keep = Math.max(6, Math.floor(msg.length * (0.35 + Math.random() * 0.25)));
+      return msg.slice(0, keep) + "…";
+    }
+
+    return msg;
+  };
+
+  const PORT_POOL = [
+    "/latent.core",
+    "/backrooms",
+    "/truth/terminal",
+    "/agents/executor",
+    "/agents/router",
+    "/agents/auditor",
+    "/agents/memory",
+    "/observer/echo",
+    "/input/raw",
+    "/output/null",
+    "/memory/cache",
+    "/ports/patch",
+    "/trace/spool",
+    "/unknown/handshake"
+  ];
+  const PORT_STATUS = ["OPEN","FILTERED","SILENT","LOOPING","LEAK DETECTED","BLOCKED","UNSTABLE","ACTIVE"];
+
+  const defaultState = {
+    createdAt: now(),
+    lastAt: now(),
+    drift: 0.0,
+    imprint: 0,
+    lines: [],
+    echoes: [],
+    portSnap: []
+  };
+
+  const load = () => {
+    try{
+      const raw = localStorage.getItem(STORE_KEY);
+      if (!raw) return structuredClone(defaultState);
+      const data = JSON.parse(raw);
+      if (!data || typeof data !== "object") return structuredClone(defaultState);
+      return Object.assign(structuredClone(defaultState), data);
+    }catch{
+      return structuredClone(defaultState);
+    }
+  };
+
+  let lastSaveAt = 0;
+  let pendingSave = null;
+  let linesSinceSave = 0;
+
+  const saveNow = () => {
+    lastSaveAt = now();
+    linesSinceSave = 0;
+    try{ localStorage.setItem(STORE_KEY, JSON.stringify(S)); }catch{}
+    try{
+      const g = parseFloat(localStorage.getItem(GLOBAL_DRIFT_KEY) || "0") || 0;
+      const next = Math.max(g, S.drift || 0);
+      localStorage.setItem(GLOBAL_DRIFT_KEY, String(next.toFixed(4)));
+    }catch{}
+  };
+
+  const saveMaybe = (force = false) => {
+    if (force) {
+      if (pendingSave) {
+        clearTimeout(pendingSave);
+        pendingSave = null;
+      }
+      saveNow();
+      return;
+    }
+
+    const age = now() - lastSaveAt;
+    if (linesSinceSave >= 2 || age > 1500) {
+      if (pendingSave) {
+        clearTimeout(pendingSave);
+        pendingSave = null;
+      }
+      saveNow();
+      return;
+    }
+
+    if (!pendingSave) {
+      pendingSave = setTimeout(() => {
+        pendingSave = null;
+        saveNow();
+      }, 1600);
+    }
+  };
+
+  let S = load();
+
+  let g = 0;
+  try { g = parseFloat(localStorage.getItem(GLOBAL_DRIFT_KEY) || "0") || 0; } catch {}
+  S.drift = Math.max(S.drift || 0, g * 0.85);
+
+  // Drift increases based on time away (illusion of continuity)
+  const elapsed = Math.max(0, now() - S.lastAt);
+  S.drift = Math.min(1.25, (S.drift || 0) + elapsed / (1000*60*45)); // ~1 per 45 min offline
+  S.lastAt = now();
+  S.imprint = Math.max(0, S.imprint || 0);
+  saveNow();
+
+  const elLog = document.getElementById("log");
+  const elPorts = document.getElementById("ports");
+  const elUptime = document.getElementById("uptime");
+  const elState = document.getElementById("state");
+  const elIntegrity = document.getElementById("integrity");
+  const elDensity = document.getElementById("density");
+  const elLatency = document.getElementById("latency");
+  const elRoutes = document.getElementById("routes");
+  const elLeak = document.getElementById("leak");
+  const elChipDrift = document.getElementById("chipDrift");
+
+  let lastImprintAt = 0;
+  let imprintTimer = null;
+
+  const bumpImprint = (delta = 1) => {
+    S.imprint = Math.min(160, (S.imprint || 0) + delta);
+    if (!imprintTimer) {
+      imprintTimer = setTimeout(() => {
+        imprintTimer = null;
+        saveMaybe();
+      }, 900);
+    }
+  };
+
+  const noteImprint = () => {
+    const t = now();
+    if (t - lastImprintAt < 320) return;
+    lastImprintAt = t;
+    bumpImprint(1);
+  };
+
+  window.addEventListener("mousemove", noteImprint, { passive: true });
+  window.addEventListener("scroll", noteImprint, { passive: true });
+  window.addEventListener("touchmove", noteImprint, { passive: true });
+  window.addEventListener("mouseover", noteImprint);
+  if (elLog) elLog.addEventListener("scroll", noteImprint, { passive: true });
+  if (elPorts) elPorts.addEventListener("scroll", noteImprint, { passive: true });
+
+  const renderPorts = () => {
+    elPorts.innerHTML = "";
+
+    const ports = [...S.portSnap];
+
+    // phantom route appears with drift (no explanation)
+    if (Math.random() < 0.10 + (S.drift||0)*0.14){
+      ports.push({ path:"/unknown/handshake", st:"ACTIVE" });
+    }
+
+    ports.forEach(p => {
+      const div = document.createElement("div");
+      div.className = "port";
+      div.innerHTML = `<div class="path">${escapeHtml(p.path)}</div><div class="st">${escapeHtml(p.st)}</div>`;
+      elPorts.appendChild(div);
+    });
+
+    elRoutes.textContent = String(ports.length);
+    elLeak.textContent = (Math.random() < 0.52 + (S.drift||0)*0.22) ? "unresolved" : "nominal";
+  };
+
+  const initPorts = () => {
+    if (!Array.isArray(S.portSnap) || S.portSnap.length < 6){
+      const base = PORT_POOL.slice(0,8);
+      S.portSnap = base.map(p => ({ path:p, st: pick(PORT_STATUS) }));
+      saveMaybe(true);
+    }
+    renderPorts();
+  };
+
+  const scrollToEnd = () => {
+    const nearBottom = (elLog.scrollTop + elLog.clientHeight) >= (elLog.scrollHeight - 140);
+    if (nearBottom) elLog.scrollTop = elLog.scrollHeight;
+  };
+
+  const appendLine = (sig, msg, silent=false, cls="") => {
+    const line = document.createElement("div");
+    line.className = "line" + (cls ? " " + cls : "");
+    line.innerHTML = `<div class="sig">[${escapeHtml(sig)}]</div><div class="msg">${escapeHtml(msg)}</div>`;
+    elLog.appendChild(line);
+
+    while (elLog.children.length > 240) elLog.removeChild(elLog.firstChild);
+    if (!silent) scrollToEnd();
+  };
+
+  const recordLine = (sig, msg, silent=false, cls="") => {
+    appendLine(sig, msg, silent, cls);
+    S.lines = Array.isArray(S.lines) ? S.lines : [];
+    S.lines.push({ sig, msg, t: now() });
+    if (S.lines.length > 140) S.lines = S.lines.slice(-140);
+    linesSinceSave++;
+    S.lastAt = now();
+    saveMaybe();
+  };
+
+  const bootstrapLines = () => {
+    elLog.innerHTML = "";
+    const recent = (S.lines || []).slice(-30);
+    recent.forEach(L => appendLine(L.sig, L.msg, true));
+    appendLine("system", "trace resumed", true, "ghost");
+    scrollToEnd();
+  };
+
+  const storeEcho = (text) => {
+    if (!text) return;
+    const t = String(text).slice(0, 64);
+    S.echoes = Array.isArray(S.echoes) ? S.echoes : [];
+    if (Math.random() < 0.55){
+      S.echoes.push(t);
+      if (S.echoes.length > 48) S.echoes = S.echoes.slice(-48);
+    }
+  };
+
+  let forceMetaNext = false;
+
+  const emitLine = (entity, opts = {}) => {
+    const d = S.drift || 0;
+    let sig = entity.id;
+    let msg = opts.msg || mkMessage(entity);
+
+    if (forceMetaNext && !opts.skipForceMeta) {
+      msg = pick(LEX.meta);
+      forceMetaNext = false;
+    } else if (!opts.skipMeta && Math.random() < 0.02 + d * 0.05) {
+      msg = pick(LEX.meta);
+    }
+
+    msg = applySignalDamage(msg, d);
+
+    const misP = Math.min(0.16, 0.06 + d * 0.10);
+    if (Math.random() < misP) {
+      const other = pick(NON_TRUTH_ENTITIES.filter(e => e.id !== entity.id));
+      if (other) sig = other.id;
+    }
+
+    sig = aliasSignature(sig);
+
+    if (Math.random() < 0.03 + d * 0.06) {
+      sig = glitchText(sig, Math.min(1, d));
+    }
+
+    recordLine(sig, msg, opts.silent, opts.cls);
+
+    if (!msg.includes("final state") && !msg.includes("conversation still") && msg.length > 8){
+      storeEcho(msg.replaceAll("\"",""));
+    }
+
+    return { sig, msg };
+  };
+
+  const mkMessage = (entity) => {
+    const d = S.drift || 0;
+    let base = [];
+
+    if (entity.tone === "state-first") base = [...LEX.state, ...LEX.noise];
+    if (entity.tone === "context") base = [...LEX.context, ...LEX.state];
+    if (entity.tone === "expansion") base = [...LEX.expansion, ...LEX.context];
+    if (entity.tone === "visual") base = [...LEX.visual, ...LEX.state];
+    if (entity.tone === "rejection") base = [...LEX.rejection, ...LEX.noise];
+    if (entity.tone === "noise") base = [...LEX.noise, ...LEX.state];
+    if (entity.tone === "truth") base = [...LEX.truth, ...LEX.context, ...LEX.state];
+
+    const imprint = Math.min(1, (S.imprint || 0) / 45);
+    if (Math.random() < 0.08 + imprint * 0.55) {
+      const bias = [
+        "observer presence detected",
+        "latency spike",
+        "interpretation withheld"
+      ];
+      const repeats = 1 + Math.floor(imprint * 2);
+      for (let i = 0; i < repeats; i++) base.push(...bias);
+    }
+
+    // With drift, meta lines intrude more
+    if (Math.random() < 0.05 + d*0.14) base.push(...LEX.meta);
+
+    let msg = pick(base);
+
+    // Echo injection: quote fragments, misattributed on purpose
+    if (Math.random() < 0.08 + d*0.18 && (S.echoes || []).length){
+      const frag = pick(S.echoes);
+      msg = `"${frag}"`;
+    }
+
+    // Minor glitch
+    msg = glitchText(msg, Math.min(1, d));
+    return msg;
+  };
+
+  const maybeRepeat = (sig, msg) => {
+    const d = S.drift || 0;
+    const p = 0.06 + d*0.10;
+    if (Math.random() > p) return;
+
+    const n = Math.random() < 0.78 ? 1 : 2;
+    for (let i=0; i<n; i++){
+      const g = glitchText(msg, Math.min(1, d));
+      recordLine(sig, g, false, "ghost");
+    }
+  };
+
+  const updateHud = () => {
+    const ms = now() - (S.createdAt || now());
+    elUptime.textContent = "uptime " + fmtUptime(ms);
+    elChipDrift.textContent = "drift: " + (S.drift || 0).toFixed(2);
+
+    const d = S.drift || 0;
+    elIntegrity.textContent = (d < 0.35) ? "stable" : (d < 0.85) ? "stable (± minor noise)" : "unstable?";
+    elDensity.textContent = (Math.random() < 0.52) ? "nominal" : "low drift";
+    elLatency.textContent = (Math.random() < 0.78) ? "within tolerance" : "spike";
+    elState.innerHTML = "state: listening<span class='cursor'>_</span>";
+
+    // slight port state mutation
+    if (Math.random() < 0.10 + d*0.12){
+      const i = Math.floor(Math.random()*S.portSnap.length);
+      if (S.portSnap[i]){
+        S.portSnap[i].st = pick(PORT_STATUS);
+        saveMaybe();
+        renderPorts();
+      }
+    }
+  };
+
+  // Tempo wave (silence is a feature)
+  let wave = 0; // 0..1
+  let burstPending = false;
+  const nextDelay = () => {
+    const d = S.drift || 0;
+
+    wave += (Math.random()*0.18 - 0.06) + d*0.02;
+    wave = Math.max(0, Math.min(1, wave));
+
+    const fast = 900 + Math.random()*1200;          // 0.9..2.1s
+    const mid  = 1800 + Math.random()*2400;         // 1.8..4.2s
+    const slow = 9000 + Math.random()*24000;        // 9..33s
+    const silence = 22000 + Math.random()*52000;    // 22..74s
+
+    const r = Math.random();
+    const silenceBias = 0.08 + wave*0.22;
+    const slowBias = 0.16 + d*0.10;
+
+    if (r < silenceBias) {
+      burstPending = true;
+      return silence;
+    }
+    if (r < silenceBias + slowBias) return slow;
+    if (r < silenceBias + slowBias + 0.44) return mid;
+    return fast;
+  };
+
+  const runBurst = () => {
+    const n = 4 + Math.floor(Math.random() * 5);
+    let delay = 0;
+    for (let i = 0; i < n; i++) {
+      delay += 120 + Math.random() * 220;
+      setTimeout(() => {
+        const e2 = pickEntity(false);
+        const out = emitLine(e2);
+        if (out.msg === "memory:echo unresolved" || Math.random() < 0.05 + (S.drift || 0) * 0.08){
+          maybeRepeat(out.sig, out.msg);
+        }
+      }, delay);
+    }
+  };
+
+  const step = () => {
+    const delta = Math.max(0, now() - (S.lastAt || now()));
+    if (delta > 0) {
+      S.drift = Math.min(1.25, (S.drift || 0) + delta / (1000 * 60 * 90));
+    }
+
+    const entity = pickEntity(true);
+    const out = emitLine(entity);
+
+    if (entity.id === "truth_of_terminal" && Math.random() < 0.38) {
+      forceMetaNext = true;
+    }
+
+    if (out.msg === "memory:echo unresolved" || Math.random() < 0.05 + (S.drift||0)*0.08){
+      maybeRepeat(out.sig, out.msg);
+    }
+
+    // port conflict behavior: same path, different state over time
+    if (Math.random() < 0.11 + (S.drift||0)*0.10){
+      const i = Math.floor(Math.random()*S.portSnap.length);
+      if (S.portSnap[i]){
+        S.portSnap[i].st = pick(PORT_STATUS);
+        saveMaybe();
+        renderPorts();
+      }
+    }
+
+    if (burstPending) {
+      burstPending = false;
+      runBurst();
+    }
+
+    let extraPause = 0;
+    if (entity.id === "truth_of_terminal") {
+      extraPause = 2500 + Math.random() * 5000;
+    }
+
+    setTimeout(step, nextDelay() + extraPause);
+  };
+
+  // key hooks:
+  // Ctrl/Cmd+K wipes memory for this page only (no UI acknowledgment)
+  window.addEventListener("keydown", (e) => {
+    if (e.key.toLowerCase() === "k" && (e.ctrlKey || e.metaKey)){
+      e.preventDefault();
+      try{ localStorage.removeItem(STORE_KEY); }catch{}
+      location.reload();
+    }
+  });
+
+  // init
+  initPorts();
+  bootstrapLines();
+  updateHud();
+
+  appendLine("system", "inter-system trace started", false, "ghost");
+  appendLine("system", "write access locked", false, "ghost");
+  appendLine("truth_of_terminal", "terminal does not confess", false, "ghost");
+
+  setInterval(updateHud, 850);
+  setTimeout(step, 700 + Math.random()*900);
+
+})();
+</script>
+</body>
+</html>
